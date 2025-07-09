@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head><title>Camera Test</title></head>
+<body>
+  <h1>Camera Test</h1>
+  <video id="v" autoplay playsinline style="width:80%;max-width:400px;border:2px solid #333;"></video>
+  <script>
+    async function start() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        document.getElementById('v').srcObject = stream;
+      } catch (e) {
+        document.body.insertAdjacentHTML('beforeend','<p style="color:red;">Error: '+e.message+'</p>');
+      }
+    }
+    start();
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI for Attendance Tracking</title>
+
+
+    
+ 
+
+
+
+  
+  <style>
+    body { background: #0a0f1a; color: #fff; font-family: sans-serif; text-align: center; margin: 0; padding: 1rem; }
+    video { width: 80%; max-width: 600px; border: 4px solid #0ff; border-radius: 8px; margin-top: 1rem; }
+    #log { margin-top: 1rem; color: #0f0; }
+  </style>
+</head>
+<body>
+  <h1>AI for Attendance Tracking</h1>
+  <video id="video" autoplay muted></video>
+  <div id="log">Initializing…</div>
+
+
+
+<script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script defer src="firebase-config.js"></script>
+<script>
+  // Debug: check firebase global
+  console.log('Firebase initialized?', !!window.firebase);
+  console.log('Firestore available?', !!window.firebase?.firestore);
+</script>
+
+
+
+
+
+
+
+  <!-- 1) Load Face‑API UMD -->
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+  <!-- 2) Our Test Script (must come after face-api UMD) -->
+  <script>
+    // Grab elements
+    const video = document.getElementById('video');
+    const log   = document.getElementById('log');
+
+    // 1️⃣ Start camera
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        log.innerText = "Camera started.";
+      } catch (err) {
+        log.innerText = "❌ Camera error: " + err.message;
+        return;
+      }
+    }
+
+    // 2️⃣ Load face-api models
+    async function loadModels() {
+      log.innerText = "Loading models…";
+      await faceapi.nets.tinyFaceDetector.loadFromUri('models/tiny_face_detector');
+      log.innerText = "Models loaded.";
+    }
+
+    // 3️⃣ Run everything
+    window.addEventListener('load', async () => {
+      await loadModels();
+      await startCamera();
+
+      // 4️⃣ Detect once for demo
+      video.addEventListener('play', async () => {
+        const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions());
+        console.log('Detection:', detection);
+        log.innerText = detection ? "✅ Face detected!" : "No face detected.";
+      });
+    });
+  </script>
+  <script>
+  
+  
+  let detectionLoop;
+
+  async function startCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+      log.innerText = "Camera started. Looking for a face…";
+    } catch (err) {
+      log.innerText = "❌ Camera error: " + err.message;
+      return;
+    }
+  }
+
+  async function loadModels() {
+    log.innerText = "Loading face‑api models…";
+    await faceapi.nets.tinyFaceDetector.loadFromUri('models/tiny_face_detector');
+    log.innerText = "Models loaded.";
+  }
+
+  async function detectFace() {
+    const det = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions());
+    console.log('Detection:', det);
+    if (det) {
+      clearInterval(detectionLoop);              // stop checking further
+      const timestamp = new Date().toLocaleString();
+      log.innerText = `✅ Face detected! Marked at ${timestamp}`;
+
+      // --- Save to Firestore ---
+      const db = firebase.firestore();
+      db.collection("attendance").add({
+        time: timestamp
+        // you can add more fields here (e.g., userId, name) if you later implement recognition
+      })
+      .then(() => console.log('✅ Attendance saved'))
+      .catch(err => console.error('❌ Save error', err));
+    } else {
+      log.innerText = "🔎 No face yet…";
+    }
+  }
+
+  window.addEventListener('load', async () => {
+    await loadModels();
+    await startCamera();
+    detectionLoop = setInterval(detectFace, 500);
+  });
+</script>
+
+
+</body>
+</html>
+
+

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Traffic Detection | AI Surveillance</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: #e2e8f0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .neon-btn {
+      background: linear-gradient(to right, #00ffab, #05c2ff);
+      color: #0e1621;
+      font-weight: bold;
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .neon-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px #00ffab;
+    }
+  </style>
+</head>
+<body>
+  <header class="bg-[#101b2d] shadow-md py-4 px-6 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-[#05c2ff]">Traffic Detection</h1>
+    <a href="index.html" class="neon-btn">← Back to Home</a>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-12">
+    <section class="mb-12" data-aos="fade-up">
+      <h2 class="text-3xl font-bold text-[#00ffab] mb-4">AI-Based Traffic Violation Detection</h2>
+      <p class="text-lg">Our smart surveillance software detects speeding vehicles, lane violations, and red light jumping in real-time. It integrates with existing traffic cameras and generates actionable alerts for authorities.</p>
+    </section>
+
+    <section class="mb-12" data-aos="fade-up" data-aos-delay="100">
+      <h2 class="text-2xl font-semibold text-cyan-300 mb-3">Core Capabilities</h2>
+      <ul class="list-disc list-inside space-y-2 text-lg">
+        <li>🚗 Speed Violation Detection using frame timing</li>
+        <li>🛑 Red Light Violation Analysis</li>
+        <li>🔍 ANPR (Automatic Number Plate Recognition)</li>
+        <li>📡 Alert auto-sent to traffic department via email/API</li>
+        <li>📁 Reports saved with date, time, vehicle image & plate</li>
+      </ul>
+    </section>
+
+    <section class="mb-12" data-aos="fade-up" data-aos-delay="200">
+      <h2 class="text-2xl font-semibold text-cyan-300 mb-3">Workflow</h2>
+      <ol class="list-decimal list-inside space-y-2 text-lg">
+        <li>Video feed is analyzed by AI</li>
+        <li>Vehicles exceeding speed threshold are flagged</li>
+        <li>Number plate is extracted via OCR</li>
+        <li>Alert is created & forwarded to authority</li>
+      </ol>
+    </section>
+
+    <div class="text-center mt-16" data-aos="zoom-in">
+      <a href="enquiry.html" class="neon-btn text-lg">Request a Demo →</a>
+    </div>
+  </main>
+
+  <footer class="text-center p-6 mt-12 text-gray-400 text-sm">
+    © 2025 AI Surveillance | Intelligent Traffic Enforcement
+  </footer>
+
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script>AOS.init();</script>
+</body>
+</html>

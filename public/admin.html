@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - Attendance Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: #f0f0f0;
+      padding: 30px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #00ffe0;
+    }
+
+    .controls {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .controls input[type="date"] {
+      padding: 10px 15px;
+      border-radius: 6px;
+      border: none;
+      font-size: 1rem;
+      background: #1b2a38;
+      color: white;
+      margin-right: 10px;
+    }
+
+    .controls button {
+      background-color: #00ffe0;
+      color: #000;
+      border: none;
+      padding: 10px 16px;
+      font-size: 1rem;
+      margin: 5px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .controls button:hover {
+      background-color: #00ccb3;
+    }
+
+    table {
+      width: 95%;
+      max-width: 900px;
+      margin: auto;
+      border-collapse: collapse;
+      background: rgba(255, 255, 255, 0.03);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    thead {
+      background-color: #00ffe0;
+      color: #000;
+    }
+
+    th, td {
+      padding: 14px 18px;
+      border-bottom: 1px solid #2c3e50;
+      text-align: left;
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.04);
+    }
+
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ✅ Back button styling */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(to right, #00ffe0, #00ccb3);
+      color: black;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 30px;
+      font-weight: bold;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(0, 255, 224, 0.3);
+      transition: background 0.3s ease, transform 0.2s ease;
+      z-index: 999;
+    }
+
+    .back-button:hover {
+      background: linear-gradient(to right, #00ccb3, #00ffe0);
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ Back Button -->
+  <a href="index.html" class="back-button">⬅ Back to Home</a>
+
+  <h1>📋 Attendance Records</h1>
+
+  <div class="controls">
+    <input type="date" id="dateFilter" />
+    <button onclick="filterByDate()">Search</button>
+    <button onclick="exportCSV()">⬇️ Export CSV</button>
+  </div>
+
+  <table id="attendanceTable">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Firebase SDKs -->
+  <script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script defer src="firebase-config.js"></script>
+
+  <script>
+    const tableBody = document.querySelector("#attendanceTable tbody");
+    let fullData = [];
+
+    window.onload = function () {
+      fetchAll();
+    };
+
+    function fetchAll() {
+      const db = firebase.firestore();
+      db.collection("attendance").orderBy("time", "desc").get()
+        .then(snapshot => {
+          tableBody.innerHTML = "";
+          let i = 1;
+          fullData = [];
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            fullData.push(data);
+            tableBody.innerHTML += `<tr>
+              <td>${i++}</td>
+              <td>${data.name || 'Unknown'}</td>
+              <td>${data.time}</td>
+            </tr>`;
+          });
+        }).catch(err => {
+          console.error("❌ Error fetching data", err);
+        });
+    }
+
+    function filterByDate() {
+      const selectedDate = document.getElementById("dateFilter").value;
+      if (!selectedDate) return alert("Please select a date");
+
+      const filtered = fullData.filter(entry => {
+        return entry.time?.includes(selectedDate);
+      });
+
+      tableBody.innerHTML = "";
+      filtered.forEach((entry, i) => {
+        tableBody.innerHTML += `<tr>
+          <td>${i + 1}</td>
+          <td>${entry.name || 'Unknown'}</td>
+          <td>${entry.time}</td>
+        </tr>`;
+      });
+    }
+
+    function exportCSV() {
+      let csv = "Name,Time\n";
+      fullData.forEach(entry => {
+        csv += `${entry.name || 'Unknown'},${entry.time}\n`;
+      });
+
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "attendance.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+
+</body>
+</html>

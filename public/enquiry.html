@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Request a Demo | AI Surveillance</title>
+
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    body {
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: #d1d5db;
+      min-height: 100vh;
+    }
+    .neon-btn {
+      background: linear-gradient(to right, #00ffab, #05c2ff);
+      color: #0e1621;
+      font-weight: bold;
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .neon-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #00ffab;
+    }
+    .input-box {
+      background: #1a2634;
+      border: 1px solid #2f3e50;
+      color: #e2e8f0;
+    }
+    .input-box:focus {
+      outline: none;
+      border-color: #00ffab;
+      box-shadow: 0 0 10px #05c2ff33;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="bg-[#101b2d] shadow-md sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-6 py-5 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-[#05c2ff]">AI Surveillance</h1>
+      <a href="index.html" class="neon-btn">Back to Home</a>
+    </div>
+  </header>
+
+  <!-- Main Form -->
+  <main class="max-w-xl mx-auto mt-16 bg-[#121e2e] shadow-lg rounded-lg p-8" data-aos="fade-up">
+    <h2 class="text-3xl font-bold text-center text-[#00ffab] mb-6">Request a Demo</h2>
+
+    <form id="demoForm" class="space-y-5">
+      <input type="text" name="name" placeholder="Your Name" required class="w-full px-4 py-3 rounded-lg input-box" />
+      <input type="text" name="institution" placeholder="Institution Type" required class="w-full px-4 py-3 rounded-lg input-box" />
+      <input type="text" name="system" placeholder="Existing CCTV System?" required class="w-full px-4 py-3 rounded-lg input-box" />
+      <textarea name="services" placeholder="Services Required (Attendance, Gesture, etc)" rows="4" class="w-full px-4 py-3 rounded-lg input-box"></textarea>
+
+      <button id="submitBtn" type="submit" class="w-full neon-btn">Submit Request</button>
+    </form>
+
+    <!-- Thank You Message -->
+    <div id="thankYou" class="hidden mt-6 text-center text-green-400 text-xl font-semibold">
+      ✅ Thank you! Your request has been received. We'll contact you shortly.
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center p-6 mt-16 text-gray-400 text-sm" data-aos="fade-in">
+    © 2025 AI Surveillance | All Rights Reserved
+  </footer>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <!-- AOS Animation Library -->
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script>AOS.init();</script>
+
+  <!-- Form Submission Script -->
+  <script>
+    const form = document.getElementById('demoForm');
+    const thankYou = document.getElementById('thankYou');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Submitting...";
+
+      try {
+        const db = firebase.firestore();
+        await db.collection("demoRequests").add({
+          name: form.name.value,
+          institution: form.institution.value,
+          system: form.system.value,
+          services: form.services.value,
+          createdAt: new Date()
+        });
+
+        form.reset();
+        form.style.display = "none";
+        thankYou.classList.remove("hidden");
+      } catch (error) {
+        alert("❌ Submission failed. Please try again later.");
+        console.error("Firestore Error:", error);
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit Request";
+      }
+    });
+  </script>
+
+</body>
+</html>
