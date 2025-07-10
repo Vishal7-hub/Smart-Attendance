@@ -1,4 +1,4 @@
-# Smart AI Attendance System
+# Smart Attendance System
 
 A facial recognition-based attendance tracker using face-api.js and Firebase.
 
